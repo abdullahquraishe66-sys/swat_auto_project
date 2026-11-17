@@ -1,0 +1,201 @@
+{% extends 'base.html' %} {% load static %} {% block title %}My Profile - SWAT
+AUTO{% endblock %} {% block content %}
+<div class="profile-section">
+  <div class="container">
+    <div class="row">
+      <!-- Profile Sidebar -->
+      <div class="col-lg-4">
+        <div class="profile-card">
+          <div class="profile-avatar text-center">
+            {% if profile.profile_picture %}
+            <img
+              src="{{ profile.profile_picture.url }}"
+              alt="{{ user.first_name }}"
+              class="rounded-circle"
+            />
+            {% else %}
+            <div class="avatar-placeholder">
+              <i
+                class="bi bi-person-circle"
+                style="font-size: 6rem; color: var(--secondary-red)"
+              ></i>
+            </div>
+            {% endif %}
+            <h4 class="mt-3">{{ user.first_name }} {{ user.last_name }}</h4>
+            <p class="text-muted">{{ user.email }}</p>
+            <span class="badge bg-primary"
+              >{{ profile.get_user_type_display }}</span
+            >
+            <p class="text-muted small mt-2">
+              Member since {{ user.date_joined|date:"F Y" }}
+            </p>
+          </div>
+
+          <hr />
+
+          <div class="profile-menu">
+            <a
+              href="{% url 'accounts:profile' %}"
+              class="profile-menu-item active"
+            >
+              <i class="bi bi-person"></i> My Profile
+            </a>
+            <a
+              href="{% url 'accounts:change_password' %}"
+              class="profile-menu-item"
+            >
+              <i class="bi bi-key"></i> Change Password
+            </a>
+            <a
+              href="{% url 'accounts:logout' %}"
+              class="profile-menu-item text-danger"
+            >
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Edit Form -->
+      <div class="col-lg-8">
+        <div class="profile-edit-card">
+          <div class="card-header-custom">
+            <h4><i class="bi bi-pencil-square me-2"></i> Edit Profile</h4>
+          </div>
+
+          <!-- IMPORTANT: enctype="multipart/form-data" for file uploads -->
+          <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="profile-form"
+          >
+            {% csrf_token %}
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_first_name" class="form-label">First Name</label>
+                {{ form.first_name }} {% if form.first_name.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ form.first_name.errors }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="id_last_name" class="form-label">Last Name</label>
+                {{ form.last_name }} {% if form.last_name.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ form.last_name.errors }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_email" class="form-label">Email Address</label>
+                {{ form.email }}
+                <small class="form-text text-muted"
+                  >Email cannot be changed</small
+                >
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="id_phone" class="form-label">Phone Number</label>
+                {{ form.phone }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="id_user_type" class="form-label">User Type</label>
+              {{ form.user_type }}
+            </div>
+
+            <div class="mb-3">
+              <label for="id_address" class="form-label">Address</label>
+              {{ form.address }}
+            </div>
+
+            <!-- Profile Picture Upload -->
+            <div class="mb-3">
+              <label for="id_profile_picture" class="form-label"
+                >Profile Picture</label
+              >
+
+              <!-- Current Profile Picture -->
+              {% if profile.profile_picture %}
+              <div class="mb-2">
+                <img
+                  src="{{ profile.profile_picture.url }}"
+                  alt="Current Profile Picture"
+                  style="
+                    width: 100px;
+                    height: 100px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                    border: 3px solid #e53935;
+                  "
+                />
+                <p class="text-muted small mt-1">Current profile picture</p>
+              </div>
+              {% endif %}
+
+              <!-- File Input -->
+              {{ form.profile_picture }}
+              <small class="form-text text-muted">
+                <i class="bi bi-info-circle"></i>
+                Upload a profile picture (JPG, PNG, max 2MB)
+              </small>
+              {% if form.profile_picture.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.profile_picture.errors }}
+              </div>
+              {% endif %}
+
+              <!-- Image Preview -->
+              <div id="imagePreview" class="mt-2" style="display: none">
+                <p class="text-muted small mb-1">New image preview:</p>
+                <img
+                  id="previewImg"
+                  src=""
+                  alt="Preview"
+                  style="
+                    width: 100px;
+                    height: 100px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                    border: 3px solid #28a745;
+                  "
+                />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save me-2"></i> Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  // Preview image before upload
+  document
+    .getElementById("id_profile_picture")
+    .addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("previewImg").src = e.target.result;
+          document.getElementById("imagePreview").style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        document.getElementById("imagePreview").style.display = "none";
+      }
+    });
+</script>
+{% endblock %}

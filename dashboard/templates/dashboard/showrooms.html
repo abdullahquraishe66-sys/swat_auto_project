@@ -1,0 +1,117 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Showroom Management - Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 fw-bold">Showroom Management</h1>
+    <span class="badge bg-primary">{{ showrooms.paginator.count }} Showrooms</span>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-2">
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control" placeholder="Search showrooms..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="verified" class="form-select">
+                    <option value="">All</option>
+                    <option value="yes" {% if verified_filter == 'yes' %}selected{% endif %}>Verified Only</option>
+                    <option value="no" {% if verified_filter == 'no' %}selected{% endif %}>Unverified Only</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Showroom</th>
+                    <th>Owner</th>
+                    <th>Cars</th>
+                    <th>Verified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for showroom in showrooms %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if showroom.logo %}
+                            <img src="{{ showroom.logo.url }}" alt="" 
+                                 style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px;">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            {% endif %}
+                            <div class="ms-2">
+                                <div class="fw-semibold">{{ showroom.name }}</div>
+                                <small class="text-muted">{{ showroom.location.name|default:"-" }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ showroom.owner.username }}</td>
+                    <td><span class="badge bg-info">{{ showroom.get_active_cars }} cars</span></td>
+                    <td>
+                        {% if showroom.is_verified %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Verified</span>
+                        {% else %}
+                        <span class="badge bg-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-{% if showroom.is_verified %}outline-warning{% else %}success{% endif %}" 
+                                onclick="toggleVerification({{ showroom.id }})">
+                            <i class="bi bi-{% if showroom.is_verified %}x-circle{% else %}check-circle{% endif %}"></i>
+                            {% if showroom.is_verified %}Unverify{% else %}Verify{% endif %}
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center py-4 text-muted">No showrooms</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function toggleVerification(showroomId) {
+    fetch(`/dashboard/showrooms/${showroomId}/toggle-verification/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest'}
+    }).then(r => r.json()).then(data => {
+        if (data.success) location.reload();
+        else alert(data.error);
+    });
+}
+</script>
+{% endblock %}

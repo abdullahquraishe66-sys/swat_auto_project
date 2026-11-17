@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - SWAT AUTO{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8 mx-auto text-center text-white py-5">
+                <span class="section-badge mb-3">About Us</span>
+                <h1 class="display-4 fw-bold mb-3">
+                    Driving Swat's <span style="background: linear-gradient(135deg, #ff6f00, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Automotive Future</span>
+                </h1>
+                <p class="lead mb-0" style="color: rgba(255,255,255,0.8);">
+                    We're connecting buyers and sellers across Swat with a trusted, modern car marketplace.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-badge">Our Story</span>
+                <h2 class="display-6 fw-bold mb-4">Built for the Swat Community</h2>
+                <p class="text-muted mb-3">
+                    SWAT AUTO was created with a simple mission: to make buying and selling cars in Swat easier, safer, and more transparent.
+                </p>
+                <p class="text-muted mb-3">
+                    We noticed that car buyers and sellers in our region had to rely on word-of-mouth, scattered social media posts, and unreliable classifieds. There was no dedicated, trustworthy platform for our community.
+                </p>
+                <p class="text-muted mb-0">
+                    That's why we built SWAT AUTO — a modern marketplace designed specifically for the Swat region, connecting buyers with verified sellers and showrooms from Mingora to Kalam.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-box">
+                            <!-- Dynamic Count -->
+                            <h3 class="display-5 fw-bold mb-0" data-count="{{ total_cars|default:0 }}">0</h3>
+                            <p class="text-muted mb-0">Cars Listed</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-box">
+                            <h3 class="display-5 fw-bold mb-0" data-count="{{ total_showrooms|default:0 }}">0</h3>
+                            <p class="text-muted mb-0">Showrooms</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-box">
+                            <h3 class="display-5 fw-bold mb-0" data-count="{{ total_users|default:0 }}">0</h3>
+                            <p class="text-muted mb-0">Registered Users</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-box">
+                            <h3 class="display-5 fw-bold mb-0" data-count="175">0</h3>
+                            <p class="text-muted mb-0">Happy Buyers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values -->
+<section class="py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">Our Values</span>
+            <h2 class="display-6 fw-bold">What We Stand For</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5>Trust & Safety</h5>
+                    <p class="text-muted mb-0">
+                        Every seller and showroom is verified. We protect our community with strict moderation and security.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h5>Community First</h5>
+                    <p class="text-muted mb-0">
+                        Built specifically for Swat. We understand local needs, prices, and trusted locations.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h5>Transparency</h5>
+                    <p class="text-muted mb-0">
+                        Real prices, real photos, real sellers. No hidden fees, no misleading listings.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h5>Fast & Easy</h5>
+                    <p class="text-muted mb-0">
+                        List a car in minutes. Find your next car with powerful search and filters.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h5>Direct Communication</h5>
+                    <p class="text-muted mb-0">
+                        Chat directly with sellers. No middlemen, no commissions, no delays.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <h5>Local Focus</h5>
+                    <p class="text-muted mb-0">
+                        From Mingora to Kalam, we cover every corner of Swat with local listings.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">How It Works</span>
+            <h2 class="display-6 fw-bold">Simple. Safe. Fast.</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card-about">
+                    <div class="step-number-about">1</div>
+                    <div class="step-icon-about">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h5>Browse & Discover</h5>
+                    <p class="text-muted mb-0">
+                        Search thousands of cars from trusted sellers and showrooms across Swat.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card-about">
+                    <div class="step-number-about">2</div>
+                    <div class="step-icon-about">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h5>Connect & Chat</h5>
+                    <p class="text-muted mb-0">
+                        Chat with sellers, ask questions, negotiate prices, and request viewings.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card-about">
+                    <div class="step-number-about">3</div>
+                    <div class="step-icon-about">
+                        <i class="bi bi-handshake"></i>
+                    </div>
+                    <h5>Meet & Drive</h5>
+                    <p class="text-muted mb-0">
+                        Visit the seller, inspect the car, and drive home in your dream vehicle.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #0a1628, #1a2d4a);">
+    <div class="container text-center text-white py-4">
+        <h2 class="display-6 fw-bold mb-3">Ready to Get Started?</h2>
+        <p class="lead mb-4" style="color: rgba(255,255,255,0.8);">
+            Join hundreds of happy buyers and sellers in Swat.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% url 'cars:list' %}" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-search me-2"></i> Browse Cars
+            </a>
+            <a href="{% url 'cars:create' %}" class="btn btn-outline-light btn-lg px-5">
+                <i class="bi bi-plus-circle me-2"></i> Sell Your Car
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #0a1628 0%, #1a2d4a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 70%;
+        height: 200%;
+        background: radial-gradient(ellipse, rgba(229, 57, 53, 0.15) 0%, transparent 70%);
+    }
+    .min-vh-50 {
+        min-height: 400px;
+    }
+    .stat-box {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .stat-box:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    .stat-box h3 {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .value-card {
+        background: white;
+        border-radius: 16px;
+        padding: 32px 24px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .value-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    .value-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, rgba(229,57,53,0.1), rgba(255,111,0,0.1));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #e53935;
+        transition: all 0.3s;
+    }
+    .value-card:hover .value-icon {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        color: white;
+        transform: scale(1.1) rotate(5deg);
+    }
+    .value-card h5 {
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+    .step-card-about {
+        background: white;
+        border-radius: 16px;
+        padding: 40px 24px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        position: relative;
+        height: 100%;
+    }
+    .step-card-about:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    .step-number-about {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(229,57,53,0.3);
+    }
+    .step-icon-about {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, rgba(229,57,53,0.1), rgba(255,111,0,0.1));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        color: #e53935;
+    }
+</style>
+{% endblock %}

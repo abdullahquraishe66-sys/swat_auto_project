@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}List Your Car - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .image-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .image-preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .image-preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .image-preview-item .remove-image {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #dc3545;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .form-section {
+        padding: 40px 0 60px;
+        background: #f8f9fa;
+        min-height: 80vh;
+    }
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .form-header h2 {
+        font-weight: 800;
+        font-size: 2rem;
+        color: #1a1a2e;
+    }
+    .form-header h2 i {
+        color: #e53935;
+    }
+    .form-header p {
+        color: #6c7a89;
+        font-size: 1rem;
+    }
+    .form-section-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 12px 0;
+        margin: 20px 0 16px;
+        border-bottom: 2px solid #f0f0f0;
+        color: #1a1a2e;
+    }
+    .form-section-title i {
+        color: #e53935;
+        margin-right: 8px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+    .form-actions .btn {
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    .form-actions .btn-primary {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        border: none;
+    }
+    .form-actions .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3);
+    }
+    .alert-showroom {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border: 2px solid #28a745;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+    }
+    .alert-showroom i {
+        color: #28a745;
+        font-size: 1.5rem;
+    }
+    .alert-individual {
+        background: linear-gradient(135deg, #cce5ff, #b8d4f0);
+        border: 2px solid #007bff;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+    }
+    .alert-individual i {
+        color: #007bff;
+        font-size: 1.5rem;
+    }
+    /* Form fields */
+    .car-form .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1a1a2e;
+    }
+    .car-form .form-control,
+    .car-form .form-select {
+        border-radius: 8px;
+        padding: 10px 14px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s;
+    }
+    .car-form .form-control:focus,
+    .car-form .form-select:focus {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+    }
+    .car-form .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+    .car-form .form-text {
+        font-size: 0.8rem;
+        color: #6c7a89;
+    }
+    .required-field::after {
+        content: ' *';
+        color: #dc3545;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="form-card">
+                    <div class="form-header">
+                        <h2><i class="bi bi-plus-circle-fill me-2"></i> List Your Car</h2>
+                        <p>Fill in the details below to list your car for sale in Swat</p>
+                    </div>
+                    
+                    <!-- Showroom / Individual Status Message -->
+                    {% if has_showroom %}
+                        <div class="alert-showroom d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-3"></i>
+                            <div>
+                                <strong class="d-block">🚗 Showroom Mode Active</strong>
+                                <span class="text-muted small">Your car will be automatically approved and visible to buyers immediately!</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert-individual d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill me-3"></i>
+                            <div>
+                                <strong class="d-block">👤 Individual Seller</strong>
+                                <span class="text-muted small">Your car will need admin approval before being visible to buyers. This usually takes 24-48 hours.</span>
+                            </div>
+                        </div>
+                        <div class="text-center mb-3">
+                            <small class="text-muted">
+                                Want to get instant approval? <a href="{% url 'showrooms:create' %}" class="text-primary fw-bold">Create a Showroom</a>
+                            </small>
+                        </div>
+                    {% endif %}
+                    
+                    <form method="POST" enctype="multipart/form-data" class="car-form">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="form-section-title">
+                            <i class="bi bi-info-circle"></i> Basic Information
+                        </div>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="id_title" class="form-label required-field">Title</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.title.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text">Example: "Toyota Corolla 2022 Excellent Condition"</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_brand" class="form-label required-field">Brand</label>
+                                {{ form.brand }}
+                                {% if form.brand.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.brand.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_model" class="form-label required-field">Model</label>
+                                {{ form.model }}
+                                {% if form.model.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.model.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_year" class="form-label required-field">Year</label>
+                                {{ form.year }}
+                                {% if form.year.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.year.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_price" class="form-label required-field">Price (PKR)</label>
+                                {{ form.price }}
+                                {% if form.price.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.price.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text">Enter the price in Pakistani Rupees (e.g., 5800000)</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Vehicle Specifications -->
+                        <div class="form-section-title">
+                            <i class="bi bi-gear"></i> Vehicle Specifications
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_mileage" class="form-label required-field">Mileage (KM)</label>
+                                {{ form.mileage }}
+                                {% if form.mileage.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.mileage.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text">Total kilometers driven</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_fuel_type" class="form-label required-field">Fuel Type</label>
+                                {{ form.fuel_type }}
+                                {% if form.fuel_type.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.fuel_type.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_transmission" class="form-label required-field">Transmission</label>
+                                {{ form.transmission }}
+                                {% if form.transmission.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.transmission.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_body_type" class="form-label required-field">Body Type</label>
+                                {{ form.body_type }}
+                                {% if form.body_type.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.body_type.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_engine_capacity" class="form-label">Engine Capacity</label>
+                                {{ form.engine_capacity }}
+                                <small class="form-text">Example: 1800cc, 1.8L, 2.5L</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_color" class="form-label">Color</label>
+                                {{ form.color }}
+                                <small class="form-text">Example: White, Black, Silver, Red</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_condition" class="form-label required-field">Condition</label>
+                                {{ form.condition }}
+                                {% if form.condition.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.condition.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_registration_city" class="form-label">Registration City</label>
+                                {{ form.registration_city }}
+                                <small class="form-text">City where the car is registered</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Location -->
+                        <div class="form-section-title">
+                            <i class="bi bi-geo-alt"></i> Location
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_location" class="form-label required-field">Location</label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.location.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_registration_year" class="form-label">Registration Year</label>
+                                {{ form.registration_year }}
+                                <small class="form-text">Year the car was first registered</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_address" class="form-label">Address</label>
+                            {{ form.address }}
+                            <small class="form-text">Full address where the car is located</small>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="form-section-title">
+                            <i class="bi bi-file-text"></i> Description
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label required-field">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text">Describe the car in detail. Include its condition, service history, any upgrades, etc.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_features" class="form-label">Features</label>
+                            {{ form.features }}
+                            <small class="form-text">Separate features with commas (e.g., Power Steering, AC, Airbags, ABS, Alloy Rims, Sunroof)</small>
+                        </div>
+                        
+                        <!-- Images -->
+                        <div class="form-section-title">
+                            <i class="bi bi-images"></i> Images
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_images" class="form-label">Upload Images</label>
+                            <input type="file" name="images" id="id_images" class="form-control" multiple accept="image/*">
+                            <small class="form-text">You can upload up to 10 images. The first image will be the primary (cover) image.</small>
+                            <div id="imagePreview" class="image-preview"></div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle-fill me-2"></i> 
+                                {% if has_showroom %}List Car (Instant Approval){% else %}Submit for Approval{% endif %}
+                            </button>
+                            <a href="{% url 'cars:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // =============================================
+    // Load models based on brand selection
+    // =============================================
+    document.getElementById('id_brand').addEventListener('change', function() {
+        const brandId = this.value;
+        const modelSelect = document.getElementById('id_model');
+        
+        if (brandId) {
+            fetch(`/cars/load-models/?brand_id=${brandId}`)
+                .then(response => response.json())
+                .then(data => {
+                    modelSelect.innerHTML = '<option value="">Select Model</option>';
+                    data.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.textContent = model.name;
+                        modelSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading models:', error));
+        } else {
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+        }
+    });
+    
+    // =============================================
+    // Image preview for new images
+    // =============================================
+    document.getElementById('id_images').addEventListener('change', function() {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        
+        Array.from(this.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'image-preview-item';
+                div.innerHTML = `
+                    <img src="${e.target.result}" alt="Image ${index + 1}">
+                    <button type="button" class="remove-image" onclick="this.parentElement.remove()">×</button>
+                `;
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat with {{ other_user.username }} - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-section {
+        padding: 30px 0 60px;
+        background: #f8f9fa;
+        min-height: 80vh;
+    }
+    .chat-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+    }
+    .chat-header {
+        padding: 16px 24px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+    .chat-header .chat-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .chat-header .chat-user .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    .chat-header .chat-user .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .chat-header .chat-user .name {
+        font-weight: 600;
+    }
+    .chat-header .chat-user .car-name {
+        font-size: 0.85rem;
+        color: #6c7a89;
+    }
+    .chat-header .back-btn {
+        color: #6c7a89;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .chat-header .back-btn:hover {
+        color: #e53935;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+        background: #f8f9fa;
+    }
+    .chat-messages .message-wrapper {
+        margin-bottom: 12px;
+        clear: both;
+    }
+    .chat-messages .message-wrapper.sent {
+        float: right;
+    }
+    .chat-messages .message-wrapper.received {
+        float: left;
+    }
+    .chat-messages .message-wrapper .bubble {
+        padding: 10px 16px;
+        border-radius: 12px;
+        word-wrap: break-word;
+        display: inline-block;
+        max-width: 100%;
+    }
+    .chat-messages .message-wrapper.sent .bubble {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    .chat-messages .message-wrapper.received .bubble {
+        background: white;
+        color: #1a1a2e;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .chat-messages .message-wrapper .time {
+        font-size: 0.7rem;
+        color: #6c7a89;
+        margin-top: 4px;
+        display: block;
+    }
+    .chat-messages .message-wrapper.sent .time {
+        text-align: right;
+    }
+    .chat-messages .message-wrapper .sender-name {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6c7a89;
+        margin-bottom: 2px;
+        display: block;
+    }
+    
+    .chat-input {
+        padding: 16px 24px;
+        border-top: 2px solid #f0f0f0;
+        flex-shrink: 0;
+        background: white;
+    }
+    .chat-input .input-group {
+        display: flex;
+        gap: 12px;
+    }
+    .chat-input .input-group textarea {
+        flex: 1;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+        padding: 10px 14px;
+        resize: none;
+        font-family: inherit;
+        transition: all 0.3s;
+        height: 50px;
+    }
+    .chat-input .input-group textarea:focus {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+        outline: none;
+    }
+    .chat-input .input-group .send-btn {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+        height: 50px;
+        white-space: nowrap;
+    }
+    .chat-input .input-group .send-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
+    }
+    .chat-input .input-group .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .empty-messages {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #6c7a89;
+    }
+    .empty-messages i {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 16px;
+    }
+    
+    /* Clearfix for floated messages */
+    .chat-messages::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="chat-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="chat-card">
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <div class="chat-user">
+                            <div class="avatar">
+                                {{ other_user.first_name|default:other_user.username|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <div class="name">{{ other_user.first_name|default:other_user.username }}</div>
+                                <div class="car-name">About: {{ conversation.car.title|truncatechars:30 }}</div>
+                            </div>
+                        </div>
+                        <a href="{% url 'chat:inbox' %}" class="back-btn">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Messages -->
+                    <div class="chat-messages" id="chatMessages">
+                        {% if messages_list %}
+                            {% for msg in messages_list %}
+                                <div class="message-wrapper {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                                    <div class="bubble">
+                                        {% if msg.sender != request.user %}
+                                            <span class="sender-name">{{ msg.sender.first_name|default:msg.sender.username }}</span>
+                                        {% endif %}
+                                        {{ msg.content }}
+                                        <span class="time">{{ msg.created_at|time:"g:i A" }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-messages">
+                                <i class="bi bi-chat-dots"></i>
+                                <h5>No messages yet</h5>
+                                <p class="text-muted">Start the conversation by sending a message below.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div class="chat-input">
+                        <form method="POST" id="messageForm">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                {{ form.content }}
+                                <button type="submit" class="send-btn" id="sendBtn">
+                                    <i class="bi bi-send"></i> Send
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-scroll to bottom on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatMessages = document.getElementById('chatMessages');
+        if (chatMessages) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+    
+    // Auto-resize textarea
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    }
+</script>
+{% endblock %}

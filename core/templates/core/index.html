@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SWAT AUTO - Find Your Dream Car in Swat{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-7 hero-content">
+                <span class="hero-badge">
+                    <i class="bi bi-star-fill"></i> Pakistan's Trusted Marketplace
+                </span>
+                <h1 class="hero-title">
+                    Find Your <span class="highlight">Dream Car</span> in Swat
+                </h1>
+                <p class="hero-description">
+                    Buy, sell, and discover cars from trusted sellers and showrooms in Swat, 
+                    Khyber Pakhtunkhwa. Thousands of cars available at your fingertips.
+                </p>
+                
+                <!-- Hero Search -->
+                <div class="hero-search">
+                    <form action="{% url 'cars:list' %}" method="GET" class="search-form">
+                        <div class="row g-2">
+                            
+                            <!-- Brand Dropdown -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="search-group">
+                                    <i class="bi bi-search"></i>
+                                    <select name="brand" id="hero_brand" class="form-select">
+                                        <option value="">Select Make</option>
+                                        {% for brand in search_brands %}
+                                            <option value="{{ brand.id }}">{{ brand.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Model Dropdown (Dynamically populated via AJAX) -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="search-group">
+                                    <i class="bi bi-car-front"></i>
+                                    <select name="model" id="hero_model" class="form-select" disabled>
+                                        <option value="">Select Model</option>
+                                        <!-- Options will be loaded here via AJAX -->
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Location Dropdown -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="search-group">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <select name="location" class="form-select">
+                                        <option value="">Select Location</option>
+                                        {% for loc in search_locations %}
+                                            <option value="{{ loc.id }}">{{ loc.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Year Dropdown -->
+                            <div class="col-lg-3 col-md-6">
+                                <div class="search-group">
+                                    <i class="bi bi-calendar"></i>
+                                    <select name="year" class="form-select">
+                                        <option value="">Select Year</option>
+                                        {% for year in search_years %}
+                                            <option value="{{ year }}">{{ year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="search-btn">
+                            <i class="bi bi-search"></i> Search Cars
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Stats -->
+                <!-- Stats -->
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <!-- Use the dynamic variable -->
+                        <span class="stat-number">{{ total_cars|default:"0" }}+</span>
+                        <span class="stat-label">Cars Listed</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ happy_buyers|default:"0" }}+</span>
+                        <span class="stat-label">Happy Buyers</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_showrooms|default:"0" }}+</span>
+                        <span class="stat-label">Trusted Showrooms</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 hero-image-wrapper">
+                <div class="hero-image">
+                    <!-- Placeholder - you can replace with actual image later -->
+                    <div class="text-center text-white">
+                        <i class="bi bi-car-front" style="font-size: 15rem; opacity: 0.3;"></i>
+                        <p class="mt-3" style="color: rgba(255,255,255,0.4);">Car Image Placeholder</p>
+                    </div>
+                    <div class="floating-card card-1">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Verified</strong>
+                            <span>Trusted Sellers</span>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="bi bi-chat-fill"></i>
+                        <div>
+                            <strong>Live Chat</strong>
+                            <span>Instant Connect</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">How It Works</span>
+            <h2>Your Car Journey in <span class="highlight">3 Simple Steps</span></h2>
+            <p class="section-subtitle">Buying or selling a car has never been easier in Swat</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="bi bi-search-heart-fill"></i>
+                    </div>
+                    <h4>Search & Discover</h4>
+                    <p>Browse through thousands of cars from trusted sellers and showrooms in Swat. Use advanced filters to find your perfect match.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="bi bi-chat-dots-fill"></i>
+                    </div>
+                    <h4>Connect & Chat</h4>
+                    <p>Chat directly with sellers or showroom owners. Ask questions, negotiate price, and arrange a viewing at their location.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="bi bi-handshake-fill"></i>
+                    </div>
+                    <h4>Meet & Drive</h4>
+                    <p>Visit the seller or showroom in Swat. Inspect the car, complete the deal, and drive home in your dream car.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="choose-image">
+                    <div class="bg-light p-5 text-center rounded-4">
+                        <i class="bi bi-shield-check" style="font-size: 6rem; color: var(--secondary-red); opacity: 0.3;"></i>
+                        <p class="text-muted mt-2">Why Choose Us Image Placeholder</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="section-header">
+                    <span class="section-badge">Why Choose Us</span>
+                    <h2>Built for the <span class="highlight">Swat Community</span></h2>
+                    <p class="section-subtitle">We understand the local market and bring you the best automotive experience</p>
+                </div>
+                <div class="choose-grid">
+                    <div class="choose-item">
+                        <div class="choose-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <h5>Verified Sellers</h5>
+                            <p>All sellers and showrooms are verified for your safety and trust.</p>
+                        </div>
+                    </div>
+                    <div class="choose-item">
+                        <div class="choose-icon">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <div>
+                            <h5>Local Focus</h5>
+                            <p>Designed specifically for Swat with all major locations and areas.</p>
+                        </div>
+                    </div>
+                    <div class="choose-item">
+                        <div class="choose-icon">
+                            <i class="bi bi-chat"></i>
+                        </div>
+                        <div>
+                            <h5>Direct Communication</h5>
+                            <p>Chat directly with sellers without any middleman or hidden fees.</p>
+                        </div>
+                    </div>
+                    <div class="choose-item">
+                        <div class="choose-icon">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div>
+                            <h5>Best Prices</h5>
+                            <p>Get the best deals directly from owners and showrooms in Swat.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-wrapper">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h2>Ready to <span class="highlight">Sell Your Car</span> in Swat?</h2>
+                    <p>List your car today and connect with thousands of potential buyers in Swat and beyond.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="#" class="cta-btn">
+                        <i class="bi bi-plus-circle-fill me-2"></i> List Your Car
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const brandSelect = document.getElementById('hero_brand');
+        const modelSelect = document.getElementById('hero_model');
+        
+        brandSelect.addEventListener('change', function() {
+            const brandId = this.value;
+            
+            // Reset models
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            if (brandId) {
+                modelSelect.disabled = true;
+                modelSelect.innerHTML = '<option value="">Loading...</option>';
+                
+                // Fetch models from backend
+                fetch(`/cars/load-models/?brand_id=${brandId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        modelSelect.innerHTML = '<option value="">Select Model</option>';
+                        data.forEach(model => {
+                            const option = document.createElement('option');
+                            option.value = model.id;
+                            option.textContent = model.name;
+                            modelSelect.appendChild(option);
+                        });
+                        modelSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error loading models:', error);
+                        modelSelect.innerHTML = '<option value="">Error loading models</option>';
+                        modelSelect.disabled = true;
+                    });
+            } else {
+                modelSelect.disabled = true;
+            }
+        });
+    });
+</script>
+{% endblock %}

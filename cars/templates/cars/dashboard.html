@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Dashboard - SWAT AUTO{% endblock %}
+
+{% block content %}
+<div class="dashboard-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-speedometer2 me-2"></i> My Dashboard</h2>
+            <a href="{% url 'cars:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle-fill me-2"></i> List New Car
+            </a>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary">
+                        <i class="bi bi-car-front"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_cars }}</h3>
+                        <p>Total Cars</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ active_cars }}</h3>
+                        <p>Active Listings</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ pending_cars }}</h3>
+                        <p>Pending Approval</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-danger">
+                        <i class="bi bi-tag"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ sold_cars }}</h3>
+                        <p>Sold Cars</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- My Cars List -->
+        <div class="dashboard-cards">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4><i class="bi bi-list me-2"></i> My Listings</h4>
+            </div>
+            
+            {% if cars %}
+                <div class="row g-4">
+                    {% for car in cars %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="car-card">
+                                <div class="car-image">
+                                    {% with primary_image=car.get_primary_image %}
+                                        {% if primary_image %}
+                                            <img src="{{ primary_image.image.url }}" alt="{{ car.title }}" class="img-fluid">
+                                        {% else %}
+                                            <div class="no-image">
+                                                <i class="bi bi-car-front"></i>
+                                                <p>No Image</p>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <div class="car-status">
+                                        <span class="badge bg-{% if car.status == 'approved' %}success{% elif car.status == 'pending' %}warning{% elif car.status == 'rejected' %}danger{% elif car.status == 'sold' %}secondary{% else %}info{% endif %}">
+                                            {{ car.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="car-body">
+                                    <h5>{{ car.title }}</h5>
+                                    <div class="car-price">PKR {{ car.price|floatformat:"0" }}</div>
+                                    <div class="car-meta">
+                                        <span><i class="bi bi-calendar"></i> {{ car.year }}</span>
+                                        <span><i class="bi bi-speedometer"></i> {{ car.mileage }} KM</span>
+                                        <span><i class="bi bi-geo-alt"></i> {{ car.get_location_display }}</span>
+                                    </div>
+                                    <div class="car-actions">
+                                        <a href="{% url 'cars:detail' car.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a href="{% url 'cars:edit' car.pk %}" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a href="{% url 'cars:mark_sold' car.pk %}" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-tag"></i> Sold
+                                        </a>
+                                        <a href="{% url 'cars:delete' car.pk %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-car-front" style="font-size: 4rem;"></i>
+                    <h4>No Cars Listed Yet</h4>
+                    <p>You haven't listed any cars. Click the button below to list your first car.</p>
+                    <a href="{% url 'cars:create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle-fill me-2"></i> List Your First Car
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

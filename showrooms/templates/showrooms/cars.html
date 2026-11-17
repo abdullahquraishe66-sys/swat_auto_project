@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Showroom Cars - SWAT AUTO{% endblock %}
+
+{% block content %}
+<section class="dashboard-section py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-6 fw-bold">
+                    <i class="bi bi-car-front me-2"></i> Showroom Cars
+                </h1>
+                <p class="text-muted">Manage all cars in your showroom</p>
+            </div>
+            <a href="{% url 'cars:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle-fill me-2"></i> Add New Car
+            </a>
+        </div>
+        
+        {% if cars %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Price</th>
+                            <th>Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    {% with primary_image=car.get_primary_image %}
+                                        {% if primary_image %}
+                                            <img src="{{ primary_image.image.url }}" alt="{{ car.title }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                                        {% else %}
+                                            <div style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="bi bi-car-front"></i>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>{{ car.title|truncatechars:30 }}</td>
+                                <td>PKR {{ car.price|floatformat:"0" }}</td>
+                                <td>{{ car.year }}</td>
+                                <td>
+                                    <span class="badge bg-{% if car.status == 'approved' %}success{% elif car.status == 'pending' %}warning{% elif car.status == 'rejected' %}danger{% elif car.status == 'sold' %}secondary{% else %}info{% endif %}">
+                                        {{ car.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'cars:detail' car.pk %}" class="btn btn-outline-primary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'cars:edit' car.pk %}" class="btn btn-outline-success" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% if car.status != 'sold' %}
+                                            <a href="{% url 'cars:mark_sold' car.pk %}" class="btn btn-outline-warning" title="Mark as Sold"
+                                               onclick="return confirm('Mark this car as sold?')">
+                                                <i class="bi bi-tag"></i>
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'cars:delete' car.pk %}" class="btn btn-outline-danger" title="Delete"
+                                           onclick="return confirm('Delete this car? This cannot be undone.')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="bi bi-car-front" style="font-size: 4rem; color: #d1d5db;"></i>
+                <h4 class="mt-3">No Cars in Showroom</h4>
+                <p class="text-muted">Start listing cars in your showroom.</p>
+                <a href="{% url 'cars:create' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-circle-fill me-2"></i> Add Your First Car
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

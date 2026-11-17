@@ -1,0 +1,570 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ car.title }} - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-section {
+        padding: 30px 0 60px;
+        background: #f8f9fa;
+    }
+    .car-title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    .car-price {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #e53935;
+        margin-bottom: 16px;
+    }
+    .car-meta-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 16px;
+        color: #6c7a89;
+    }
+    .car-meta-details span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .verified-badge {
+        display: inline-block;
+        background: #d4edda;
+        color: #155724;
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+    .verified-badge i {
+        color: #28a745;
+    }
+
+    /* Gallery */
+    .car-detail-gallery {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+    .car-detail-gallery .carousel {
+        background: #f0f0f0;
+    }
+    .car-detail-gallery .carousel-item img {
+        height: 450px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .thumbnail-gallery {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        overflow-x: auto;
+        background: white;
+    }
+    .thumbnail-gallery img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s;
+        flex-shrink: 0;
+    }
+    .thumbnail-gallery img:hover {
+        border-color: #e53935;
+        transform: scale(1.05);
+    }
+    .thumbnail-gallery img.active {
+        border-color: #e53935;
+    }
+
+    /* Car Info Card */
+    .car-info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 100px;
+    }
+    .seller-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin: 16px 0;
+    }
+    .seller-card h6 {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .seller-card p {
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .action-buttons .btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 10px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    .action-buttons .btn-primary {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        border: none;
+    }
+    .action-buttons .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3);
+    }
+
+    /* Specifications */
+    .specifications-section,
+    .description-section,
+    .features-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-top: 24px;
+    }
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .section-title i {
+        color: #e53935;
+        margin-right: 8px;
+    }
+    .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+    }
+    .spec-item {
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    .spec-item .label {
+        font-size: 0.75rem;
+        color: #6c7a89;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .spec-item .value {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 4px;
+    }
+    .features-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .feature-tag {
+        background: #f8f9fa;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .feature-tag i {
+        color: #28a745;
+    }
+
+    /* Related Cars */
+    .related-cars-section {
+        margin-top: 40px;
+    }
+    .related-cars-section .car-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .related-cars-section .car-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+    .related-cars-section .car-image-wrapper {
+        height: 150px;
+        overflow: hidden;
+        background: #f0f0f0;
+    }
+    .related-cars-section .car-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .related-cars-section .car-card-body {
+        padding: 12px;
+    }
+    .related-cars-section .car-card-body h6 {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+    .related-cars-section .car-card-price {
+        font-weight: 700;
+        color: #e53935;
+        font-size: 1rem;
+    }
+
+    /* Toast notification */
+    .toast-container {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 9999;
+    }
+    .toast-notification {
+        padding: 14px 24px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        animation: slideIn 0.3s ease-out;
+        min-width: 250px;
+        max-width: 400px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .toast-notification.success { background: #28a745; }
+    .toast-notification.error { background: #dc3545; }
+    .toast-notification.warning { background: #ffc107; color: #1a1a2e; }
+    .toast-notification.info { background: #17a2b8; }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    @media (max-width: 992px) {
+        .car-detail-gallery .carousel-item img { height: 300px; }
+        .car-info-card { position: static; margin-top: 24px; }
+    }
+    @media (max-width: 576px) {
+        .car-title { font-size: 1.5rem; }
+        .car-price { font-size: 1.6rem; }
+        .spec-grid { grid-template-columns: 1fr 1fr; }
+        .action-buttons .btn { min-width: 80px; font-size: 0.85rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="detail-section">
+    <div class="container">
+        <div class="row">
+            <!-- Image Gallery -->
+            <div class="col-lg-7">
+                <div class="car-detail-gallery">
+                    <div id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% if images %}
+                                {% for image in images %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ image.image.url }}" alt="{{ car.title }} - Image {{ forloop.counter }}">
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="carousel-item active">
+                                    <div class="no-image-placeholder" style="height: 450px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; flex-direction: column;">
+                                        <i class="bi bi-car-front" style="font-size: 4rem; color: #6c7a89;"></i>
+                                        <p class="mt-2 text-muted">No images available</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if images|length > 1 %}
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if images|length > 1 %}
+                    <div class="thumbnail-gallery" id="thumbnailGallery">
+                        {% for image in images %}
+                        <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}" onclick="changeCarousel({{ forloop.counter0 }})" class="{% if forloop.first %}active{% endif %}">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Car Info -->
+            <div class="col-lg-5">
+                <div class="car-info-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h1 class="car-title">{{ car.title }}</h1>
+                        <button class="btn btn-outline-danger favorite-btn" data-car-id="{{ car.id }}" onclick="toggleFavorite(event, {{ car.id }})" style="border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                            {% if user.is_authenticated and car in user.favorites.all %}
+                                <i class="bi bi-heart-fill" style="color: #e53935;"></i>
+                            {% else %}
+                                <i class="bi bi-heart"></i>
+                            {% endif %}
+                        </button>
+                    </div>
+
+                    <div class="car-price">PKR {{ car.price|floatformat:"0" }}</div>
+
+                    <div class="car-meta-details">
+                        <span><i class="bi bi-calendar"></i> {{ car.year }}</span>
+                        <span><i class="bi bi-speedometer2"></i> {{ car.mileage|floatformat:"0" }} KM</span>
+                        <span><i class="bi bi-geo-alt"></i> {{ car.get_location_display }}</span>
+                        <span><i class="bi bi-car-front"></i> {{ car.get_body_type_display }}</span>
+                    </div>
+
+                    {% if car.is_verified %}
+                    <div class="verified-badge">
+                        <i class="bi bi-check-circle-fill"></i> Verified Listing
+                    </div>
+                    {% endif %}
+                    
+                    {% if car.is_featured %}
+                    <div class="verified-badge" style="background: #fff3cd; color: #856404;">
+                        <i class="bi bi-star-fill" style="color: #fbbf24;"></i> Featured Listing
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <!-- Seller Info -->
+                    <div class="seller-card">
+                        <h6><i class="bi bi-person-circle"></i> Seller Information</h6>
+                        <p class="mb-1"><strong>{{ car.get_seller_name }}</strong></p>
+                        {% if seller_profile and seller_profile.phone %}
+                        <p class="mb-1"><i class="bi bi-telephone"></i> {{ seller_profile.phone }}</p>
+                        {% endif %}
+                        {% if car.address %}
+                        <p class="mb-0"><i class="bi bi-geo-alt"></i> {{ car.address }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="{% url 'chat:start' car.id %}" class="btn btn-primary">
+                            <i class="bi bi-chat-dots me-2"></i> Chat with Seller
+                        </a>
+                        <a href="#" class="btn btn-success" onclick="showToast('WhatsApp feature coming soon!', 'info')">
+                            <i class="bi bi-whatsapp me-2"></i> WhatsApp
+                        </a>
+                    </div>
+
+                    <div class="action-buttons mt-2">
+                        <a href="{% url 'appointments:request_viewing' car.id %}" class="btn btn-outline-primary">
+                            <i class="bi bi-calendar-check me-2"></i> Request Viewing
+                        </a>
+                        <a href="{% url 'reports:report_car' car.id %}" class="btn btn-outline-danger">
+                            <i class="bi bi-flag me-2"></i> Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specifications -->
+        <div class="row">
+            <div class="col-12">
+                <div class="specifications-section">
+                    <h3 class="section-title"><i class="bi bi-list-ul"></i> Specifications</h3>
+                    <div class="spec-grid">
+                        {% for spec in specs %}
+                        <div class="spec-item">
+                            <span class="label">{{ spec.label }}</span>
+                            <span class="value">{{ spec.value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="row">
+            <div class="col-12">
+                <div class="description-section">
+                    <h3 class="section-title"><i class="bi bi-file-text"></i> Description</h3>
+                    <p>{{ car.description|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        {% if features_list %}
+        <div class="row">
+            <div class="col-12">
+                <div class="features-section">
+                    <h3 class="section-title"><i class="bi bi-check-circle"></i> Key Features</h3>
+                    <div class="features-list">
+                        {% for feature in features_list %}
+                        <span class="feature-tag">
+                            <i class="bi bi-check-circle-fill"></i> {{ feature }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Related Cars -->
+        {% if related_cars %}
+        <div class="row">
+            <div class="col-12">
+                <div class="related-cars-section">
+                    <h3 class="section-title"><i class="bi bi-car-front"></i> Similar Cars</h3>
+                    <div class="row g-4">
+                        {% for related in related_cars %}
+                        <div class="col-lg-3 col-md-6">
+                            <div class="car-card">
+                                <div class="car-image-wrapper">
+                                    {% if related.get_primary_image %}
+                                        <img src="{{ related.get_primary_image.image.url }}" alt="{{ related.title }}">
+                                    {% else %}
+                                        <div class="no-image-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f0f0f0;">
+                                            <i class="bi bi-car-front" style="font-size: 2rem; color: #999;"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="car-card-body">
+                                    <h6>{{ related.title|truncatechars:25 }}</h6>
+                                    <div class="car-card-price">PKR {{ related.price|floatformat:"0" }}</div>
+                                    <a href="{% url 'cars:detail' related.pk %}" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // =============================================
+    // Thumbnail gallery navigation
+    // =============================================
+    function changeCarousel(index) {
+        const carousel = document.getElementById('carouselIndicators');
+        const bsCarousel = bootstrap.Carousel.getInstance(carousel);
+        if (bsCarousel) {
+            bsCarousel.to(index);
+            document.querySelectorAll('.thumbnail-gallery img').forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+        }
+    }
+
+    // =============================================
+    // Favorite button toggle
+    // =============================================
+    function toggleFavorite(event, carId) {
+        event.preventDefault();
+
+        {% if user.is_authenticated %}
+        const btn = event.currentTarget;
+        const icon = btn.querySelector('i');
+
+        fetch("{% url 'favorites:toggle' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'car_id=' + carId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.is_favorited) {
+                    btn.classList.add('active');
+                    icon.className = 'bi bi-heart-fill';
+                    icon.style.color = '#e53935';
+                } else {
+                    btn.classList.remove('active');
+                    icon.className = 'bi bi-heart';
+                    icon.style.color = '';
+                }
+                const badge = document.querySelector('.favorites-badge');
+                if (badge) {
+                    badge.textContent = data.favorites_count;
+                }
+                showToast(data.message, 'success');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+        {% else %}
+        window.location.href = "{% url 'accounts:login' %}?next=" + window.location.pathname;
+        {% endif %}
+    }
+
+    // =============================================
+    // Toast notification
+    // =============================================
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification ' + type;
+
+        const icons = {
+            success: 'bi-check-circle-fill',
+            error: 'bi-x-circle-fill',
+            warning: 'bi-exclamation-triangle-fill',
+            info: 'bi-info-circle-fill'
+        };
+
+        toast.innerHTML = '<i class="bi ' + (icons[type] || icons.info) + '"></i> ' + message;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>
+{% endblock %}

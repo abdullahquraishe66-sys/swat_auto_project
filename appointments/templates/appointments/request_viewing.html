@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Request Viewing - SWAT AUTO{% endblock %}
+
+{% block content %}
+<section class="request-section py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="bi bi-calendar-check me-2"></i> Request Viewing</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="car-info mb-4 p-3 bg-light rounded">
+                            <div class="d-flex align-items-center gap-3">
+                                {% with primary_image=car.get_primary_image %}
+                                    {% if primary_image %}
+                                        <img src="{{ primary_image.image.url }}" alt="{{ car.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                    {% else %}
+                                        <div style="width: 80px; height: 80px; background: #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-car-front" style="font-size: 2rem; color: #999;"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                                <div>
+                                    <h5 class="mb-1">{{ car.title }}</h5>
+                                    <p class="text-muted mb-0">PKR {{ car.price|floatformat:"0" }}</p>
+                                    <p class="text-muted mb-0 small">Seller: {{ car.seller.first_name|default:car.seller.username }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="id_preferred_date" class="form-label">Preferred Date</label>
+                                {{ form.preferred_date }}
+                                {% if form.preferred_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.preferred_date.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_preferred_time" class="form-label">Preferred Time</label>
+                                {{ form.preferred_time }}
+                                {% if form.preferred_time.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.preferred_time.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_message" class="form-label">Message (Optional)</label>
+                                {{ form.message }}
+                                {% if form.message.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.message.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-2"></i> Send Request
+                                </button>
+                                <a href="{% url 'cars:detail' car.pk %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i> Back
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

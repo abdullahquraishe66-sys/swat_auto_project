@@ -1,0 +1,242 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - SWAT AUTO{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1 fw-bold">Dashboard Overview</h1>
+        <p class="text-muted mb-0">Welcome back, {{ user.first_name|default:user.username }}!</p>
+    </div>
+    <div>
+        <span class="text-muted small">
+            <i class="bi bi-calendar"></i> {{ "now"|date:"F j, Y" }}
+        </span>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Total Users</p>
+                        <h3 class="mb-0 fw-bold">{{ total_users }}</h3>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-people-fill text-primary" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Total Cars</p>
+                        <h3 class="mb-0 fw-bold">{{ total_cars }}</h3>
+                    </div>
+                    <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-car-front-fill text-success" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Active Cars</p>
+                        <h3 class="mb-0 fw-bold">{{ active_cars }}</h3>
+                    </div>
+                    <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-check-circle-fill text-info" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Pending Cars</p>
+                        <h3 class="mb-0 fw-bold text-warning">{{ pending_cars }}</h3>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-clock-history text-warning" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Showrooms</p>
+                        <h3 class="mb-0 fw-bold">{{ total_showrooms }}</h3>
+                    </div>
+                    <div class="bg-secondary bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-building-fill text-secondary" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Sold Cars</p>
+                        <h3 class="mb-0 fw-bold">{{ sold_cars }}</h3>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-tag-fill text-danger" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Pending Reports</p>
+                        <h3 class="mb-0 fw-bold text-danger">{{ pending_reports }}</h3>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-flag-fill text-danger" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">Viewing Requests</p>
+                        <h3 class="mb-0 fw-bold">{{ total_viewing_requests }}</h3>
+                    </div>
+                    <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-calendar-check-fill text-info" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row g-4">
+    <!-- Recent Cars -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>Recent Cars</h5>
+            </div>
+            <div class="card-body p-0">
+                {% for car in recent_cars %}
+                <div class="d-flex align-items-center p-3 border-bottom">
+                    {% if car.get_primary_image %}
+                    <img src="{{ car.get_primary_image.image.url }}" alt="{{ car.title }}" 
+                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                    {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                         style="width: 50px; height: 50px;">
+                        <i class="bi bi-car-front text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <div class="ms-3 flex-grow-1">
+                        <div class="fw-semibold">{{ car.title|truncatechars:30 }}</div>
+                        <small class="text-muted">
+                            PKR {{ car.price|floatformat:"0" }} • {{ car.created_at|timesince }} ago
+                        </small>
+                    </div>
+                    <span class="badge bg-{% if car.status == 'approved' %}success{% elif car.status == 'pending' %}warning{% else %}secondary{% endif %}">
+                        {{ car.get_status_display }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="text-center py-4 text-muted">No recent cars</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Users -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2"></i>Recent Users</h5>
+            </div>
+            <div class="card-body p-0">
+                {% for u in recent_users %}
+                <div class="d-flex align-items-center p-3 border-bottom">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 40px; height: 40px; font-weight: 600;">
+                        {{ u.first_name|default:u.username|make_list|first|upper }}
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                        <div class="fw-semibold">{{ u.first_name|default:u.username }}</div>
+                        <small class="text-muted">
+                            {{ u.email|truncatechars:30 }}
+                        </small>
+                    </div>
+                    <small class="text-muted">{{ u.date_joined|timesince }} ago</small>
+                </div>
+                {% empty %}
+                <div class="text-center py-4 text-muted">No recent users</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reports -->
+{% if recent_reports %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-flag me-2"></i>Recent Reports</h5>
+                <a href="{% url 'dashboard:reports' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% for report in recent_reports %}
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <div>
+                        <span class="badge bg-{{ report.get_color_display }} me-2">{{ report.get_reason_display }}</span>
+                        <span class="text-muted small">{{ report.created_at|timesince }} ago</span>
+                    </div>
+                    <span class="badge bg-warning">{{ report.get_status_display }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

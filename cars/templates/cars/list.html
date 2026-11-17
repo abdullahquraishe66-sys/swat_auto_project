@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cars for Sale in Swat - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header & Compact Filter */
+    .page-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 30px;
+        background: white;
+        padding: 20px 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .page-title h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        color: #1a1a2e;
+    }
+    
+    .page-title p {
+        font-size: 0.9rem;
+        color: #6c7a89;
+        margin: 0;
+    }
+
+    .compact-filter {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .compact-filter label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1a1a2e;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .compact-filter .form-select {
+        width: 220px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .compact-filter .form-select:focus {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+        background-color: white;
+    }
+
+    /* Car Grid Styles */
+    .car-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .car-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+    .car-image-wrapper {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+        background: #f0f0f0;
+    }
+    .car-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    .car-card:hover .car-card-img {
+        transform: scale(1.05);
+    }
+    .no-image-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: #f0f0f0;
+        color: #999;
+        font-size: 3rem;
+    }
+    .featured-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #1a1a2e;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+    .car-card-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .favorite-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.9);
+        color: #999;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        cursor: pointer;
+    }
+    .favorite-btn:hover { background: white; transform: scale(1.1); }
+    .favorite-btn.active { color: #e53935; background: white; }
+    
+    .car-card-body {
+        padding: 16px;
+    }
+    .car-card-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+    .car-card-title a { color: #1a1a2e; text-decoration: none; }
+    .car-card-title a:hover { color: #e53935; }
+    .car-card-price {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #e53935;
+        margin-bottom: 8px;
+    }
+    .car-card-specs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.85rem;
+        color: #6c7a89;
+        margin-bottom: 12px;
+    }
+    .car-card-specs span { display: flex; align-items: center; gap: 4px; }
+    .car-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+    }
+    .car-card-seller { font-size: 0.8rem; color: #6c7a89; }
+    .car-card-seller i { color: #e53935; }
+    .view-btn {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        border: none;
+        padding: 6px 20px;
+        font-size: 0.85rem;
+        border-radius: 20px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .view-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(229,57,53,0.3); color: white;}
+
+    /* Controls Bar */
+    .controls-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .page-header-bar {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+        .compact-filter {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .compact-filter .form-select {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="marketplace-section py-4">
+    <div class="container">
+        
+        <!-- Header with Top-Right Compact Filter -->
+        <div class="page-header-bar">
+            <div class="page-title">
+                <h1>Cars in Swat</h1>
+                <p>Find your perfect car from trusted sellers</p>
+            </div>
+            
+            <!-- Compact Filter Form -->
+            <form method="GET" id="filterForm" class="compact-filter">
+                <!-- Preserve sorting if it exists -->
+                {% if sort_by %}<input type="hidden" name="sort" value="{{ sort_by }}">{% endif %}
+                
+                <label for="brand"><i class="bi bi-funnel me-1"></i> Filter by Make:</label>
+                <select name="brand" id="brand" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Brands</option>
+                    {% for brand in brands %}
+                        <option value="{{ brand.id }}" {% if selected_brand|add:"0" == brand.id %}selected{% endif %}>
+                            {{ brand.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Controls (Results count & Sort) -->
+        <div class="controls-bar">
+            <div>
+                <span class="badge bg-primary">{{ total_cars }} cars found</span>
+                {% if selected_brand %}
+                    <a href="{% url 'cars:list' %}" class="btn btn-sm btn-outline-secondary ms-2">
+                        <i class="bi bi-x-circle"></i> Clear Filter
+                    </a>
+                {% endif %}
+            </div>
+            
+            <form method="GET" id="sortForm">
+                <!-- Preserve brand filter -->
+                {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand }}">{% endif %}
+                
+                <div class="d-flex align-items-center gap-2">
+                    <label for="sort" class="text-muted small fw-bold text-nowrap">Sort by:</label>
+                    <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+                        <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="mileage_asc" {% if sort_by == 'mileage_asc' %}selected{% endif %}>Lowest Mileage</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Car Grid -->
+        {% if cars %}
+            <div class="row g-4">
+                {% for car in cars %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="car-card">
+                            <div class="car-image-wrapper">
+                                {% if car.get_primary_image %}
+                                    <img src="{{ car.get_primary_image.image.url }}" alt="{{ car.title }}" class="car-card-img">
+                                {% else %}
+                                    <div class="no-image-placeholder">
+                                        <i class="bi bi-car-front"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if car.is_featured %}
+                                    <span class="featured-badge">⭐ Featured</span>
+                                {% endif %}
+                                
+                                <div class="car-card-actions">
+                                    <button class="favorite-btn {% if user.is_authenticated and car in user.favorites.all %}active{% endif %}" 
+                                            data-car-id="{{ car.id }}" onclick="toggleFavorite(event, {{ car.id }})">
+                                        <i class="bi {% if user.is_authenticated and car in user.favorites.all %}bi-heart-fill{% else %}bi-heart{% endif %}" 
+                                           {% if user.is_authenticated and car in user.favorites.all %}style="color: #e53935;"{% endif %}></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="car-card-body">
+                                <h5 class="car-card-title">
+                                    <a href="{% url 'cars:detail' car.pk %}">{{ car.title|truncatechars:30 }}</a>
+                                </h5>
+                                <div class="car-card-price">PKR {{ car.price|floatformat:"0" }}</div>
+                                
+                                <div class="car-card-specs">
+                                    <span><i class="bi bi-calendar"></i> {{ car.year }}</span>
+                                    <span><i class="bi bi-speedometer2"></i> {{ car.mileage|floatformat:"0" }} KM</span>
+                                    <span><i class="bi bi-geo-alt"></i> {{ car.get_location_display|truncatechars:12 }}</span>
+                                </div>
+                                
+                                <div class="car-card-footer">
+                                    <span class="car-card-seller">
+                                        <i class="bi bi-person"></i> {{ car.get_seller_name|truncatechars:15 }}
+                                    </span>
+                                    <a href="{% url 'cars:detail' car.pk %}" class="view-btn">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if cars.paginator.num_pages > 1 %}
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if cars.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ cars.previous_page_number }}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in cars.paginator.page_range %}
+                            {% if cars.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > cars.number|add:'-3' and num < cars.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if cars.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ cars.next_page_number }}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="bi bi-car-front"></i>
+                <h4>No Cars Found</h4>
+                <p>We couldn't find any cars matching your criteria. Try clearing the filter.</p>
+                <a href="{% url 'cars:list' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-arrow-clockwise me-2"></i> Clear Filter
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Favorite Button Toggle
+    function toggleFavorite(event, carId) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        {% if user.is_authenticated %}
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('i');
+            
+            fetch("{% url 'favorites:toggle' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `car_id=${carId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_favorited) {
+                        btn.classList.add('active');
+                        icon.className = 'bi bi-heart-fill';
+                        icon.style.color = '#e53935';
+                    } else {
+                        btn.classList.remove('active');
+                        icon.className = 'bi bi-heart';
+                        icon.style.color = '';
+                    }
+                }
+            });
+        {% else %}
+            window.location.href = "{% url 'accounts:login' %}";
+        {% endif %}
+    }
+</script>
+{% endblock %}

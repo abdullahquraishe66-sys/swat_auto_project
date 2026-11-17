@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Favorites - SWAT AUTO{% endblock %}
+
+{% block content %}
+<section class="favorites-section py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-6 fw-bold">
+                    <i class="bi bi-heart-fill text-danger me-2"></i> My Favorites
+                </h1>
+                <p class="text-muted" id="favoritesCount">{{ favorites.count }} cars saved</p>
+            </div>
+            <a href="{% url 'cars:list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-search me-2"></i> Browse More Cars
+            </a>
+        </div>
+        
+        {% if favorites %}
+            <div class="row g-4" id="favoritesGrid">
+                {% for favorite in favorites %}
+                    <div class="col-lg-4 col-md-6 favorite-item" data-car-id="{{ favorite.car.id }}">
+                        <div class="car-card">
+                            <div class="car-image-wrapper">
+                                {% with car=favorite.car %}
+                                    {% with primary_image=car.get_primary_image %}
+                                        {% if primary_image %}
+                                            <img src="{{ primary_image.image.url }}" alt="{{ car.title }}" class="car-card-img">
+                                        {% else %}
+                                            <div class="no-image-placeholder">
+                                                <i class="bi bi-car-front"></i>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                                
+                                {% if favorite.car.is_featured %}
+                                    <span class="featured-badge">⭐ Featured</span>
+                                {% endif %}
+                                
+                                <div class="car-card-actions">
+                                    <button class="favorite-btn active" data-car-id="{{ favorite.car.id }}" onclick="removeFavorite(event, {{ favorite.car.id }})">
+                                        <i class="bi bi-heart-fill" style="color: #e53935;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="car-card-body">
+                                <h5 class="car-card-title">
+                                    <a href="{% url 'cars:detail' favorite.car.pk %}">{{ favorite.car.title|truncatechars:30 }}</a>
+                                </h5>
+                                <div class="car-card-price">PKR {{ favorite.car.price|floatformat:"0" }}</div>
+                                
+                                <div class="car-card-specs">
+                                    <span><i class="bi bi-calendar"></i> {{ favorite.car.year }}</span>
+                                    <span><i class="bi bi-speedometer2"></i> {{ favorite.car.mileage|floatformat:"0" }} KM</span>
+                                    <span><i class="bi bi-geo-alt"></i> {{ favorite.car.get_location_display }}</span>
+                                </div>
+                                
+                                <div class="car-card-footer">
+                                    <span class="car-card-seller">
+                                        <i class="bi bi-person"></i> {{ favorite.car.get_seller_name }}
+                                    </span>
+                                    <a href="{% url 'cars:detail' favorite.car.pk %}" class="btn btn-primary btn-sm view-btn">View Details</a>
+                                </div>
+                                
+                                <div class="mt-2">
+                                    <small class="text-muted">Added: {{ favorite.created_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="bi bi-heart" style="font-size: 4rem; color: #d1d5db;"></i>
+                <h4 class="mt-3">No Favorites Yet</h4>
+                <p class="text-muted">Start saving your favorite cars by clicking the heart icon on any car listing.</p>
+                <a href="{% url 'cars:list' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-search me-2"></i> Browse Cars
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+<!-- ====== JAVASCRIPT GOES HERE ====== -->
+{% block extra_js %}
+<script>
+    // =============================================
+    // 1. REMOVE FAVORITE FUNCTION
+    // =============================================
+    function removeFavorite(event, carId) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const btn = event.currentTarget;
+        const card = btn.closest('.favorite-item');
+        
+        // Send AJAX request to toggle favorite
+        fetch("{% url 'favorites:toggle' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `car_id=${carId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the card with animation
+                card.style.transition = 'all 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    card.remove();
+                    
+                    // Update count
+                    const countElement = document.getElementById('favoritesCount');
+                    if (countElement) {
+                        const remainingCards = document.querySelectorAll('.favorite-item').length;
+                        countElement.textContent = `${remainingCards} cars saved`;
+                    }
+                    
+                    // Check if empty
+                    if (document.querySelectorAll('.favorite-item').length === 0) {
+                        // Show empty state
+                        const grid = document.getElementById('favoritesGrid');
+                        if (grid) {
+                            grid.innerHTML = `
+                                <div class="col-12">
+                                    <div class="empty-state text-center py-5">
+                                        <i class="bi bi-heart" style="font-size: 4rem; color: #d1d5db;"></i>
+                                        <h4 class="mt-3">No Favorites Yet</h4>
+                                        <p class="text-muted">Start saving your favorite cars by clicking the heart icon on any car listing.</p>
+                                        <a href="{% url 'cars:list' %}" class="btn btn-primary mt-3">
+                                            <i class="bi bi-search me-2"></i> Browse Cars
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Update navbar count
+                    const badge = document.querySelector('.favorites-badge');
+                    if (badge) {
+                        badge.textContent = data.favorites_count;
+                    }
+                    
+                    // Show toast notification
+                    showToast('Removed from favorites');
+                }, 300);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    // =============================================
+    // 2. TOAST NOTIFICATION FUNCTION
+    // =============================================
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        toast.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 200px; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);';
+        toast.innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(toast);
+        
+        // Auto dismiss after 3 seconds
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.5s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

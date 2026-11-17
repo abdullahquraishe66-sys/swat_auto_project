@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notifications-section {
+        padding: 30px 0 60px;
+        background: #f8f9fa;
+        min-height: 80vh;
+    }
+    .notifications-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .notifications-header {
+        padding: 20px 24px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .notifications-header h2 {
+        font-weight: 700;
+        margin: 0;
+    }
+    .notifications-header h2 i {
+        color: #e53935;
+    }
+    .filter-tabs {
+        display: flex;
+        gap: 8px;
+    }
+    .filter-tabs .filter-btn {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: #6c7a89;
+        background: #f0f0f0;
+        transition: all 0.3s;
+    }
+    .filter-tabs .filter-btn:hover {
+        background: #e0e0e0;
+    }
+    .filter-tabs .filter-btn.active {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        color: white;
+    }
+    
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 16px 24px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.3s;
+        position: relative;
+    }
+    .notification-item:hover {
+        background: #f8f9fa;
+    }
+    .notification-item.unread {
+        background: #f0f7ff;
+    }
+    .notification-item.unread::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+    }
+    
+    .notification-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+    }
+    .notification-icon.bg-primary { background: linear-gradient(135deg, #e53935, #ff6f00); }
+    .notification-icon.bg-success { background: #28a745; }
+    .notification-icon.bg-danger { background: #dc3545; }
+    .notification-icon.bg-warning { background: #ffc107; color: #1a1a2e; }
+    .notification-icon.bg-info { background: #17a2b8; }
+    .notification-icon.bg-secondary { background: #6c7a89; }
+    
+    .notification-content {
+        flex: 1;
+        min-width: 0;
+    }
+    .notification-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #1a1a2e;
+    }
+    .notification-message {
+        font-size: 0.9rem;
+        color: #6c7a89;
+        margin-bottom: 6px;
+        line-height: 1.4;
+    }
+    .notification-time {
+        font-size: 0.75rem;
+        color: #999;
+    }
+    
+    .notification-actions {
+        display: flex;
+        gap: 6px;
+        opacity: 0;
+        transition: all 0.3s;
+    }
+    .notification-item:hover .notification-actions {
+        opacity: 1;
+    }
+    .notification-actions .btn {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .empty-notifications {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c7a89;
+    }
+    .empty-notifications i {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 16px;
+    }
+    .empty-notifications h4 {
+        color: #1a1a2e;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="notifications-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="notifications-card">
+                    <div class="notifications-header">
+                        <div>
+                            <h2><i class="bi bi-bell-fill me-2"></i> Notifications</h2>
+                            <p class="text-muted mb-0 small">
+                                {% if unread_count > 0 %}
+                                You have <strong>{{ unread_count }}</strong> unread notification{{ unread_count|pluralize }}
+                                {% else %}
+                                All caught up!
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% if unread_count > 0 %}
+                            <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-check-all"></i> Mark All Read
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Tabs -->
+                    <div class="p-3 border-bottom">
+                        <div class="filter-tabs">
+                            <a href="?filter=all" class="filter-btn {% if filter_type == 'all' %}active{% endif %}">
+                                All ({{ total_count }})
+                            </a>
+                            <a href="?filter=unread" class="filter-btn {% if filter_type == 'unread' %}active{% endif %}">
+                                Unread ({{ unread_count }})
+                            </a>
+                            <a href="?filter=read" class="filter-btn {% if filter_type == 'read' %}active{% endif %}">
+                                Read
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications List -->
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                        <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                            <div class="notification-icon bg-{{ notification.get_color }}">
+                                <i class="bi {{ notification.get_icon }}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">{{ notification.title }}</div>
+                                <div class="notification-message">{{ notification.message }}</div>
+                                <div class="notification-time">
+                                    <i class="bi bi-clock"></i> {{ notification.time_since }} ago
+                                    {% if notification.sender %}
+                                    • from {{ notification.sender.first_name|default:notification.sender.username }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                {% if notification.link %}
+                                <a href="{% url 'notifications:mark_as_read' notification.id %}" 
+                                   class="btn btn-sm btn-primary" title="View">
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                                {% elif not notification.is_read %}
+                                <a href="{% url 'notifications:mark_as_read' notification.id %}" 
+                                   class="btn btn-sm btn-outline-primary" title="Mark as read">
+                                    <i class="bi bi-check"></i>
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'notifications:delete' notification.id %}" 
+                                   class="btn btn-sm btn-outline-danger" title="Delete"
+                                   onclick="return confirm('Delete this notification?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Pagination -->
+                        {% if notifications.paginator.num_pages > 1 %}
+                        <nav class="p-3">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if notifications.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ notifications.previous_page_number }}&filter={{ filter_type }}">&laquo;</a>
+                                </li>
+                                {% endif %}
+                                {% for num in notifications.paginator.page_range %}
+                                <li class="page-item {% if notifications.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ num }}&filter={{ filter_type }}">{{ num }}</a>
+                                </li>
+                                {% endfor %}
+                                {% if notifications.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ notifications.next_page_number }}&filter={{ filter_type }}">&raquo;</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-notifications">
+                            <i class="bi bi-bell-slash"></i>
+                            <h4>No Notifications</h4>
+                            <p>
+                                {% if filter_type == 'unread' %}
+                                You have no unread notifications.
+                                {% elif filter_type == 'read' %}
+                                You have no read notifications.
+                                {% else %}
+                                You don't have any notifications yet.
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

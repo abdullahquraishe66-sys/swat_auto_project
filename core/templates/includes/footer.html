@@ -1,0 +1,82 @@
+<footer class="footer">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Company -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="footer-heading">
+                    <i class="bi bi-car-front-fill me-2"></i>SWAT AUTO
+                </h5>
+                <p class="footer-text">
+                    Pakistan's trusted automotive marketplace for buying and selling cars in Swat and beyond.
+                </p>
+                <div class="social-links mt-3">
+                    <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h5 class="footer-heading">Company</h5>
+                <ul class="footer-links">
+                    <li><a href="{% url 'core:about' %}"><i class="bi bi-chevron-right"></i> About Us</a></li>
+                    <li><a href="{% url 'core:contact' %}"><i class="bi bi-chevron-right"></i> Contact</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right"></i> Privacy Policy</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right"></i> Terms & Conditions</a></li>
+                </ul>
+            </div>
+            
+            <!-- Marketplace -->
+            <div class="col-lg-2 col-md-6">
+                <h5 class="footer-heading">Marketplace</h5>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="bi bi-chevron-right"></i> Browse Cars</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right"></i> Sell Your Car</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right"></i> Showrooms</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right"></i> Featured Cars</a></li>
+                </ul>
+            </div>
+            
+            <!-- Locations -->
+            <div class="col-lg-2 col-md-6">
+                <h5 class="footer-heading">Popular Locations</h5>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="bi bi-geo-alt"></i> Mingora</a></li>
+                    <li><a href="#"><i class="bi bi-geo-alt"></i> Saidu Sharif</a></li>
+                    <li><a href="#"><i class="bi bi-geo-alt"></i> Kabal</a></li>
+                    <li><a href="#"><i class="bi bi-geo-alt"></i> Matta</a></li>
+                    <li><a href="#"><i class="bi bi-geo-alt"></i> Bahrain</a></li>
+                    <li><a href="#"><i class="bi bi-geo-alt"></i> Kalam</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="footer-heading">Contact Us</h5>
+                <ul class="footer-contact">
+                    <li>
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>+92 300 1234567</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>info@swatauto.com</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>Mingora, Swat, Khyber Pakhtunkhwa, Pakistan</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} SWAT AUTO. All rights reserved.</p>
+            <p class="text-muted small">Made with <i class="bi bi-heart-fill text-danger"></i> in Swat</p>
+        </div>
+    </div>
+</footer>

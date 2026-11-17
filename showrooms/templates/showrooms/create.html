@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Showroom - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .showroom-form-section {
+        padding: 40px 0 60px;
+        background: #f8f9fa;
+        min-height: 80vh;
+    }
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .form-header h2 {
+        font-weight: 800;
+        font-size: 2rem;
+        color: #1a1a2e;
+    }
+    .form-header h2 i {
+        color: #e53935;
+    }
+    .form-header p {
+        color: #6c7a89;
+        font-size: 1rem;
+    }
+    .form-section-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 12px 0;
+        margin: 20px 0 16px;
+        border-bottom: 2px solid #f0f0f0;
+        color: #1a1a2e;
+    }
+    .form-section-title i {
+        color: #e53935;
+        margin-right: 8px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+    .form-actions .btn {
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    .form-actions .btn-primary {
+        background: linear-gradient(135deg, #e53935, #ff6f00);
+        border: none;
+    }
+    .form-actions .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3);
+    }
+    .showroom-form .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1a1a2e;
+    }
+    .showroom-form .form-control,
+    .showroom-form .form-select {
+        border-radius: 8px;
+        padding: 10px 14px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s;
+    }
+    .showroom-form .form-control:focus,
+    .showroom-form .form-select:focus {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+    }
+    .showroom-form .form-text {
+        font-size: 0.8rem;
+        color: #6c7a89;
+    }
+    .required-field::after {
+        content: ' *';
+        color: #dc3545;
+        font-weight: 700;
+    }
+    .info-alert {
+        background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+        border: 2px solid #17a2b8;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+    }
+    .info-alert i {
+        color: #17a2b8;
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="showroom-form-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="form-card">
+                    <div class="form-header">
+                        <h2><i class="bi bi-building-add me-2"></i> Create Your Showroom</h2>
+                        <p>Set up your professional showroom profile and start listing cars</p>
+                    </div>
+                    
+                    <div class="info-alert d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-3"></i>
+                        <div>
+                            <strong class="d-block">Why create a showroom?</strong>
+                            <span class="text-muted small">Showrooms get auto-approved listings, a professional profile, and can list unlimited cars!</span>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data" class="showroom-form">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="form-section-title">
+                            <i class="bi bi-info-circle"></i> Basic Information
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="id_name" class="form-label required-field">Showroom Name</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_phone" class="form-label required-field">Phone Number</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.phone.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label required-field">Short Description</label>
+                            {{ form.description }}
+                            <small class="form-text">Brief description of your showroom (max 200 characters)</small>
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_about" class="form-label">About Showroom</label>
+                            {{ form.about }}
+                            <small class="form-text">Detailed information about your showroom, history, specialties, etc.</small>
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <div class="form-section-title">
+                            <i class="bi bi-telephone"></i> Contact Information
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_whatsapp" class="form-label">WhatsApp Number</label>
+                                {{ form.whatsapp }}
+                                <small class="form-text">Optional - for WhatsApp inquiries</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_email" class="form-label">Email Address</label>
+                                {{ form.email }}
+                                <small class="form-text">Optional - for email inquiries</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Location -->
+                        <div class="form-section-title">
+                            <i class="bi bi-geo-alt"></i> Location
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_location" class="form-label required-field">City/Area</label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.location.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_days_open" class="form-label">Days Open</label>
+                                {{ form.days_open }}
+                                <small class="form-text">e.g., Monday-Saturday</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_address" class="form-label required-field">Full Address</label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.address.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Business Hours -->
+                        <div class="form-section-title">
+                            <i class="bi bi-clock"></i> Business Hours
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="id_opening_time" class="form-label">Opening Time</label>
+                                {{ form.opening_time }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_closing_time" class="form-label">Closing Time</label>
+                                {{ form.closing_time }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label d-block">24/7 Open</label>
+                                <div class="form-check mt-2">
+                                    {{ form.is_open_24_7 }}
+                                    <label class="form-check-label" for="id_is_open_24_7">
+                                        Yes, we are open 24/7
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Media -->
+                        <div class="form-section-title">
+                            <i class="bi bi-images"></i> Showroom Images
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_logo" class="form-label">Showroom Logo</label>
+                                {{ form.logo }}
+                                <small class="form-text">Square image recommended (500x500px)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_cover_image" class="form-label">Cover Image</label>
+                                {{ form.cover_image }}
+                                <small class="form-text">Wide image recommended (1200x400px)</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Social Media -->
+                        <div class="form-section-title">
+                            <i class="bi bi-share"></i> Social Media (Optional)
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_facebook" class="form-label">
+                                    <i class="bi bi-facebook text-primary"></i> Facebook
+                                </label>
+                                {{ form.facebook }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_instagram" class="form-label">
+                                    <i class="bi bi-instagram" style="color: #e1306c;"></i> Instagram
+                                </label>
+                                {{ form.instagram }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="id_youtube" class="form-label">
+                                    <i class="bi bi-youtube text-danger"></i> YouTube
+                                </label>
+                                {{ form.youtube }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_twitter" class="form-label">
+                                    <i class="bi bi-twitter-x"></i> Twitter/X
+                                </label>
+                                {{ form.twitter }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_website" class="form-label">
+                                    <i class="bi bi-globe"></i> Website
+                                </label>
+                                {{ form.website }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle-fill me-2"></i> Create Showroom
+                            </button>
+                            <a href="{% url 'cars:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

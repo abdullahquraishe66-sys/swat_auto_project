@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Showroom Dashboard - SWAT AUTO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-section {
+        padding: 30px 0 60px;
+        background: #f8f9fa;
+        min-height: 80vh;
+    }
+    .showroom-info-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+    .showroom-info-card:hover {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .showroom-logo-large {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #e53935;
+    }
+    .showroom-logo-placeholder-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #999;
+        border: 3px solid #e53935;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
+    }
+    .stat-icon.bg-primary { background: linear-gradient(135deg, #e53935, #ff6f00); }
+    .stat-icon.bg-success { background: #28a745; }
+    .stat-icon.bg-warning { background: #ffc107; }
+    .stat-icon.bg-danger { background: #dc3545; }
+    .stat-info h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    .stat-info p {
+        color: #6c7a89;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .dashboard-cards {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .car-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .car-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .car-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: #e2e8f0;
+    }
+    .car-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .car-image .no-image {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #6c7a89;
+    }
+    .car-image .no-image i {
+        font-size: 3rem;
+    }
+    .car-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .car-status .badge {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+    }
+    .car-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+    .car-actions .btn {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .car-actions .btn:hover {
+        transform: translateY(-2px);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c7a89;
+    }
+    .empty-state i {
+        color: #d1d5db;
+        margin-bottom: 16px;
+    }
+    .empty-state h4 {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1a1a2e;
+    }
+    @media (max-width: 768px) {
+        .showroom-info-card .d-flex {
+            flex-direction: column;
+            text-align: center;
+        }
+        .showroom-info-card .ms-3 {
+            margin-left: 0 !important;
+            margin-top: 12px;
+        }
+        .stat-card {
+            padding: 16px;
+        }
+        .stat-info h3 {
+            font-size: 1.4rem;
+        }
+        .car-actions .btn {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h1 class="display-6 fw-bold">
+                    <i class="bi bi-building me-2 text-primary"></i> Showroom Dashboard
+                </h1>
+                <p class="text-muted">Manage your showroom and car listings</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'showrooms:edit' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil me-2"></i> Edit Showroom
+                </a>
+                <a href="{% url 'cars:create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle-fill me-2"></i> Add New Car
+                </a>
+            </div>
+        </div>
+        
+        <!-- Showroom Info -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="showroom-info-card">
+                    <div class="d-flex align-items-center">
+                        {% if showroom.logo %}
+                            <img src="{{ showroom.logo.url }}" alt="{{ showroom.name }}" class="showroom-logo-large">
+                        {% else %}
+                            <div class="showroom-logo-placeholder-large">
+                                <i class="bi bi-building"></i>
+                            </div>
+                        {% endif %}
+                        <div class="ms-3">
+                            <h3>{{ showroom.name }}</h3>
+                            <p class="text-muted mb-1">
+                                <i class="bi bi-geo-alt"></i> {{ showroom.address }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <i class="bi bi-telephone"></i> {{ showroom.phone }}
+                                {% if showroom.whatsapp %}
+                                    | <i class="bi bi-whatsapp text-success"></i> {{ showroom.whatsapp }}
+                                {% endif %}
+                            </p>
+                            <div class="mt-1">
+                                {% if showroom.is_verified %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i> Verified
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-clock"></i> Pending Verification
+                                    </span>
+                                {% endif %}
+                                <span class="badge bg-info ms-2">
+                                    <i class="bi bi-eye"></i> {{ showroom.views_count }} Views
+                                </span>
+                                <span class="badge bg-secondary ms-2">
+                                    <i class="bi bi-calendar"></i> Member since {{ showroom.created_at|date:"M Y" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary">
+                        <i class="bi bi-car-front"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_cars }}</h3>
+                        <p>Total Cars</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ active_cars }}</h3>
+                        <p>Active Listings</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ pending_cars }}</h3>
+                        <p>Pending Approval</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-danger">
+                        <i class="bi bi-tag"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ sold_cars }}</h3>
+                        <p>Sold Cars</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- My Cars -->
+        <div class="dashboard-cards">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h4><i class="bi bi-list me-2"></i> My Car Listings</h4>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'showrooms:cars' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-arrow-right"></i> View All
+                    </a>
+                    <a href="{% url 'cars:create' %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Car
+                    </a>
+                </div>
+            </div>
+            
+            {% if cars %}
+                <div class="row g-4">
+                    {% for car in cars %}
+                        <div class="col-lg-4 col-md-6" id="car-card-{{ car.id }}">
+                            <div class="car-card">
+                                <div class="car-image">
+                                    {% with primary_image=car.get_primary_image %}
+                                        {% if primary_image %}
+                                            <img src="{{ primary_image.image.url }}" alt="{{ car.title }}">
+                                        {% else %}
+                                            <div class="no-image">
+                                                <i class="bi bi-car-front"></i>
+                                                <p class="mt-2 mb-0">No Image</p>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <div class="car-status">
+                                        <span class="badge bg-{% if car.status == 'approved' %}success{% elif car.status == 'pending' %}warning{% elif car.status == 'rejected' %}danger{% elif car.status == 'sold' %}secondary{% else %}info{% endif %}">
+                                            {{ car.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="car-body p-3">
+                                    <h5 class="mb-1">{{ car.title|truncatechars:25 }}</h5>
+                                    <div class="car-price fw-bold text-danger">PKR {{ car.price|floatformat:"0" }}</div>
+                                    <div class="car-meta d-flex flex-wrap gap-2 text-muted small">
+                                        <span><i class="bi bi-calendar"></i> {{ car.year }}</span>
+                                        <span><i class="bi bi-speedometer"></i> {{ car.mileage|floatformat:"0" }} KM</span>
+                                        <span><i class="bi bi-geo-alt"></i> {{ car.get_location_display|truncatechars:10 }}</span>
+                                    </div>
+                                    
+                                    <div class="car-actions">
+                                        <a href="{% url 'cars:detail' car.pk %}" class="btn btn-outline-primary" title="View" target="_blank">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'cars:edit' car.pk %}" class="btn btn-outline-success" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        
+                                        {% if car.status == 'pending' %}
+                                            <a href="{% url 'showrooms:approve_car' car.pk %}" class="btn btn-success" title="Approve" onclick="return confirm('Approve this car?')">
+                                                <i class="bi bi-check-circle"></i>
+                                            </a>
+                                            <a href="{% url 'showrooms:reject_car' car.pk %}" class="btn btn-danger" title="Reject" onclick="return confirm('Reject this car?')">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if car.status == 'approved' %}
+                                            <form method="POST" action="{% url 'cars:mark_sold' car.pk %}" onsubmit="return confirm('Mark this car as sold?')" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-warning" title="Mark as Sold">
+                                                    <i class="bi bi-tag"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        
+                                        <form method="POST" action="{% url 'cars:delete' car.pk %}" onsubmit="return confirm('Delete this car? This cannot be undone.')" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-car-front" style="font-size: 4rem;"></i>
+                    <h4>No Cars Listed Yet</h4>
+                    <p>You haven't listed any cars in your showroom.</p>
+                    <a href="{% url 'cars:create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle-fill me-2"></i> List Your First Car
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

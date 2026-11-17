@@ -1,0 +1,102 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Pending Cars - Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 fw-bold">Pending Cars for Approval</h1>
+    <span class="badge bg-warning">{{ cars.paginator.count }} pending</span>
+</div>
+
+{% if cars %}
+<div class="row g-3">
+    {% for car in cars %}
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex gap-3">
+                    {% if car.get_primary_image %}
+                    <img src="{{ car.get_primary_image.image.url }}" alt="" 
+                         style="width: 120px; height: 90px; object-fit: cover; border-radius: 8px;">
+                    {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                         style="width: 120px; height: 90px;">
+                        <i class="bi bi-car-front text-muted fs-2"></i>
+                    </div>
+                    {% endif %}
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ car.title }}</h6>
+                        <p class="mb-1"><strong>PKR {{ car.price|floatformat:"0" }}</strong></p>
+                        <small class="text-muted">
+                            {{ car.brand.name }} {{ car.model.name }} • {{ car.year }} • {{ car.get_seller_name }}
+                        </small>
+                        <div class="mt-2 d-flex gap-2">
+                            <button class="btn btn-sm btn-success" onclick="approveCar({{ car.id }})">
+                                <i class="bi bi-check-circle"></i> Approve
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="rejectCar({{ car.id }})">
+                                <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                            <a href="{% url 'cars:detail' car.pk %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+        <h4 class="mt-3">All Caught Up!</h4>
+        <p class="text-muted">No pending cars to review.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function approveCar(carId) {
+    if (!confirm('Approve this car?')) return;
+    fetch(`/dashboard/cars/${carId}/approve/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest'}
+    }).then(r => r.json()).then(data => {
+        if (data.success) location.reload();
+        else alert(data.error);
+    });
+}
+
+function rejectCar(carId) {
+    if (!confirm('Reject this car?')) return;
+    fetch(`/dashboard/cars/${carId}/reject/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest'}
+    }).then(r => r.json()).then(data => {
+        if (data.success) location.reload();
+        else alert(data.error);
+    });
+}
+</script>
+{% endblock %}

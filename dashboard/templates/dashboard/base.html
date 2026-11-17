@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .admin-dashboard {
+        display: flex;
+        min-height: calc(100vh - 60px);
+        background: #f4f6f9;
+    }
+    .admin-sidebar {
+        width: 260px;
+        background: linear-gradient(180deg, #0a1628 0%, #1a2d4a 100%);
+        padding: 20px 0;
+        position: sticky;
+        top: 60px;
+        height: calc(100vh - 60px);
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+    .admin-sidebar .sidebar-brand {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 16px;
+    }
+    .admin-sidebar .sidebar-brand h5 {
+        color: white;
+        margin: 0;
+        font-weight: 700;
+    }
+    .admin-sidebar .sidebar-brand small {
+        color: rgba(255,255,255,0.5);
+        font-size: 0.75rem;
+    }
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+    .sidebar-link:hover,
+    .sidebar-link.active {
+        background: rgba(255,255,255,0.05);
+        color: white;
+        border-left-color: #e53935;
+    }
+    .sidebar-link i {
+        width: 20px;
+        font-size: 1.05rem;
+    }
+    .sidebar-link .badge {
+        margin-left: auto;
+    }
+    .sidebar-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.1);
+        margin: 12px 20px;
+    }
+    
+    .admin-content {
+        flex: 1;
+        padding: 24px;
+        overflow-x: hidden;
+    }
+    
+    @media (max-width: 992px) {
+        .admin-dashboard {
+            flex-direction: column;
+        }
+        .admin-sidebar {
+            width: 100%;
+            position: static;
+            height: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-brand">
+            <h5><i class="bi bi-shield-fill-check me-2"></i>Admin Panel</h5>
+            <small>SWAT AUTO Management</small>
+        </div>
+        
+        <a href="{% url 'dashboard:index' %}" class="sidebar-link {% if request.path == '/dashboard/' %}active{% endif %}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        
+        <div class="sidebar-divider"></div>
+        <div class="px-3 py-2" style="color: rgba(255,255,255,0.4); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Management</div>
+        
+        <a href="{% url 'dashboard:users' %}" class="sidebar-link {% if '/dashboard/users/' in request.path %}active{% endif %}">
+            <i class="bi bi-people-fill"></i> Users
+        </a>
+        
+        <a href="{% url 'dashboard:cars' %}" class="sidebar-link {% if '/dashboard/cars/' in request.path and 'pending' not in request.path and 'featured' not in request.path %}active{% endif %}">
+            <i class="bi bi-car-front-fill"></i> Cars
+        </a>
+        
+        <a href="{% url 'dashboard:pending_cars' %}" class="sidebar-link {% if '/dashboard/cars/pending/' in request.path %}active{% endif %}">
+            <i class="bi bi-clock-history"></i> Pending Cars
+        </a>
+        
+        <a href="{% url 'dashboard:featured_cars' %}" class="sidebar-link {% if '/dashboard/cars/featured/' in request.path %}active{% endif %}">
+            <i class="bi bi-star-fill"></i> Featured Cars
+        </a>
+        
+        <a href="{% url 'dashboard:showrooms' %}" class="sidebar-link {% if '/dashboard/showrooms/' in request.path %}active{% endif %}">
+            <i class="bi bi-building-fill"></i> Showrooms
+        </a>
+        
+        <a href="{% url 'dashboard:reports' %}" class="sidebar-link {% if '/dashboard/reports/' in request.path %}active{% endif %}">
+            <i class="bi bi-flag-fill"></i> Reports
+        </a>
+        
+        <div class="sidebar-divider"></div>
+        
+        <a href="{% url 'core:index' %}" class="sidebar-link">
+            <i class="bi bi-house-door-fill"></i> Back to Website
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="admin-content">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
