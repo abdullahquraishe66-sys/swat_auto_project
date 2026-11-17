@@ -20,6 +20,14 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.onrender.com',
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # Application definition
 INSTALLED_APPS = [
